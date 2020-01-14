@@ -1,26 +1,56 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
+const bcrypt = require("bcryptjs");
 
-const User = mongoose.model("user", {
-
-Email: {
-type: String,
-required: true
-
-},
-
-Name: {
- type: Number,
- required: true
-
-  },
-
-Graduated: {
-
-    type: Boolean
+const userSchema = new mongoose.Schema({
+  Email: {
+    type: String,
+    required: true,
+    trim: true,
+    lowercase: true,
+    validate(value) {
+      if(!validator.isEmail(value)) {
+        throw new Error("Email is invalid")
+      }
+    }
+    },
     
+    Name: {
+     type: Number,
+     required: true,
+     trim: true
+    },
+    
+    Password:{
+      type:String,
+      required:true,
+      trim:true,
+      minLength:6,
+      validate(value){
+        if(value.toLowerCase().includes("password")){
+          throw new Error('Password cannot contain "password"')
+        }
+      }
+},
+    
+    Graduated: {
+    
+        type: Boolean,
+        default: false
+        
+    }
+})
+
+
+userSchema.pre("save", async function(next){
+  const user = this;
+  if(user.isModified("password")){
+    user.password = await bcrypt.hash(user.password, 7);
   }
-
+  next();
 });
+// when we send a post or patch request, then bcrypt will run before the user password is saved to the mongo object
 
+const User = mongoose.model("User", userSchema); 
 module.exports = User;
 

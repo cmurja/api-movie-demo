@@ -8,71 +8,69 @@ const router = new express.Router();
 
 router.post("/users", async (req, res) => {
 
-  try {
+    try{
 
-    const user = new User(req.body);
+        const user = new User(req.body);
 
-    await user.save();
+        await user.save();
 
-    res.send(user);
+        res.send(user);
 
-  } catch (error) {
+    }catch (error){
 
-    res.status(500).send(error);
+        res.status(500).send(error);
 
-  }
+    }
 
 });
-
-
 
 router.get("/users", async (req, res) => {
 
-  try {
+    try{
 
-    let user = await User.find({});
+        let users = await User.find({});
 
-    res.send(user);
+        res.send(users);
 
-  } catch (error) {
+    }catch (error){
 
-    res.status(500).send(error);
+        res.status(500).send(error);
 
-  }
-
-});
-
-router.get("/users/:id", async (req, res) => {
-
-  try {
-
-    let user = await User.findById(req.params.id);
-
-    res.send(user);
-
-  } catch (error) {
-
-    res.status(500).send(error);
-
-  }
+    }
 
 });
 
 
 
-router.delete("/users/:id", async (req, res) => {
+router.get("/users/:id",  async (req, res) => {
 
-  try {
+    try {
 
-    const user = await User.findByIdAndDelete(req.params.id);
+      let user = await User.findById(req.params.id);
 
-    res.send(user);
+      res.send(user);  
 
-  } catch (error) {
+    }catch (error) {
 
-    res.status(500).send(error);
+        res.status(500).send(error);
 
-  }
+    }
+
+});
+
+router.delete("/users/:id", async(req, res) => {
+
+    try {
+
+        const user = await User.findByIdAndDelete(req.params.id);
+
+        res.send(user);
+
+    } catch (error) {
+
+        res.status(500).send(error);
+
+    }
 
 });
 
@@ -80,29 +78,28 @@ router.delete("/users/:id", async (req, res) => {
 
 router.patch("/users/:id", async (req, res) => {
 
-  const updates = Object.keys(req.body);
+    const updates = Object.keys(req.body);
 
-  const allowedUpdates = ["genre"];
+    const allowedUpdates = ["Email", "Name", "Graduated"];
 
-  const isValidOperation = updates.every(update =>
+    const isValidOperation = updates.every(update => allowedUpdates.includes(update)
 
-    allowedUpdates.includes(update)
+    );
 
-  );
+    try {
 
-  try {
+        const user = await User.findByIdAndUpdate(req.params.id, req.body);
 
-    const user = await User.findByIdAndUpdate(req.params.id, req.body);
+        res.send(movie);
 
-    res.send(user);
+    } catch (error) {
 
-  } catch (error) {
+        res.status(500).send(error);
 
-    res.status(500).send(error);
-
-  }
+    }
 
 });
 
-module.exports = router;
 
+
+module.exports = router;

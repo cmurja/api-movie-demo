@@ -9,3 +9,18 @@ app.use(userRouter);
 app.listen(3000, () => {
   console.log("Server up on 3000");
 });
+
+
+//Encription bcrypt hashing will occur as middleware during requests
+/* const bcrypt = require("bcryptjs");
+const testFunction = async () => {
+  const password = "siths1234";
+  const hashedPassword = await bcrypt.hash(password, 10);
+  console.log(password);
+  console.log(hashedPassword);
+
+  const isMatch = await bcrypt.compare("siths1234", hashedPassword);
+  console.log(isMatch)
+}
+
+testFunction(); */
