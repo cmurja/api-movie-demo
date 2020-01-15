@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   Email: {
     type: String,
     required: true,
+    unique: true,
     trim: true,
     lowercase: true,
     validate(value) {
@@ -50,6 +51,17 @@ userSchema.pre("save", async function(next){
   next();
 });
 // when we send a post or patch request, then bcrypt will run before the user password is saved to the mongo object
+
+userSchema.statics.findByCredentials = async (email, password) =>{
+  const user = await User.findOne({email});
+  if(!user){
+    throw new Error("unable to login");
+  }
+  const isMatch = await bcrypt.compare(password, user.password);
+  if(!ismatch){
+    throw new Error("incorrect password");
+  }return user;
+};
 
 const User = mongoose.model("User", userSchema); 
 module.exports = User;
