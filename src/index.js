@@ -24,3 +24,14 @@ const testFunction = async () => {
 }
 
 testFunction(); */
+
+/* const jwt = require("jsonwebtoken");
+constestFunction() = async () =>{
+  const token = jwt.sign({_id:  // grab an id but mongooose is being a pain, "obeysudo", {
+    expiresIn: "7 days"
+  });
+  console.log(token);
+  const data = jwt.verify(token, "obeysudo");
+  console.log(data);
+}
+testFunction(); */

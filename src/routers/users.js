@@ -13,11 +13,12 @@ router.post("/users", async (req, res) => {
         const user = new User(req.body);
 
         await user.save();
+        const token = await user.generateToken();//lowercase so token is generated for only this user
 
-        res.send(user);
+        res.send({user, token});
 
     }catch (error){
-
+        console.log(e);
         res.status(500).send(error);
 
     }
@@ -53,6 +54,9 @@ router.get("/users", async (req, res) => {
 
 });
 
+router.get("/users/me", auth, async(req, res) => {
+    res.send(req.user);
+});
 
 
 router.get("/users/:id",  async (req, res) => {
