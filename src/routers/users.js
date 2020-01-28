@@ -6,135 +6,104 @@ const auth = require("../middleware/auth");
 
 const router = new express.Router();
 
-
-
 router.post("/users", async (req, res) => {
+  try {
+    const user = new User(req.body);
 
-    try{
+    await user.save();
 
-        const user = new User(req.body);
+    const token = await user.generateToken(); //lowercase so that token is generated for only this user
 
-        await user.save();
-        const token = await user.generateToken();//lowercase so token is generated for only this user
-
-        res.send({user, token});
-
-    }catch (error){
-        console.log(e);
-        res.status(500).send(error);
-
-    }
-
+    res.send({ user, token });
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 
+router.post("/users/login", async (req, res) => {
+  try {
+    const user = await User.findByCredentials(
+      req.body.email,
 
-router.post("/users/login", async (req,res) => {
-    try{
-        const user = await User.findByCredentials(
-            req.body.email,
-            req.body.password
-        );
-        const token = await user.generateToken();
+      req.body.password
+    );
 
-        res.send({user, token});
-    } catch(error) {
-        res.status(400).send(error);
-    }
-})
+    const token = await user.generateToken();
 
-router.post("users/logout", auth, async(req,res) =>{
-    console.log(token.token);
-    try{
-        req.user.tokens= req.user.tokens.filter(token =>{
-            console.log(token.token);
-            return token.token !== req.token;
-        });
-        await req.user.save();
-        res.send("You have logged out");
-    }catch(error) {
-        res.status(400).send(error);
-    }
+    res.send({ user, token });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+router.post("/users/logout", auth, async (req, res) => {
+  console.log(token.token);
+
+  try {
+    req.user.tokens = req.user.tokens.filter(token => {
+      console.log(token.token);
+
+      return token.token !== req.token;
+    });
+
+    await req.user.save();
+
+    res.send("You have logged out");
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 
 router.get("/users", async (req, res) => {
+  try {
+    let users = await User.find({});
 
-    try{
-
-        let users = await User.find({});
-
-        res.send(users);
-
-    }catch (error){
-
-        res.status(500).send(error);
-
-    }
-
+    res.send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 
-router.get("/users/me", auth, async(req, res) => {
-    res.send(req.user);
+router.get("/users/me", auth, async (req, res) => {
+  res.send(req.user);
 });
 
+router.get("/users/:id", async (req, res) => {
+  try {
+    let user = await User.findById(req.params.id);
 
-router.get("/users/:id",  async (req, res) => {
-
-    try {
-
-      let user = await User.findById(req.params.id);
-
-      res.send(user);  
-
-    }catch (error) {
-
-        res.status(500).send(error);
-
-    }
-
+    res.send(user);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 
-router.delete("/users/:id", async(req, res) => {
+router.delete("/users/:id", async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
 
-    try {
-
-        const user = await User.findByIdAndDelete(req.params.id);
-
-        res.send(user);
-
-    } catch (error) {
-
-        res.status(500).send(error);
-
-    }
-
+    res.send(user);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
-
-
 
 router.patch("/users/:id", async (req, res) => {
+  const updates = Object.keys(req.body);
 
-    const updates = Object.keys(req.body);
+  const allowedUpdates = ["email", "name", "graduated"];
 
-    const allowedUpdates = ["Email", "Name", "Graduated"];
+  const isValidOperation = updates.every(update =>
+    allowedUpdates.includes(update)
+  );
 
-    const isValidOperation = updates.every(update => allowedUpdates.includes(update)
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body);
 
-    );
-
-    try {
-
-        const user = await User.findByIdAndUpdate(req.params.id, req.body);
-
-        res.send(movie);
-
-    } catch (error) {
-
-        res.status(500).send(error);
-
-    }
-
+    res.send(user);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
-
-
 
 module.exports = router;
