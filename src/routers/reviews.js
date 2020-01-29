@@ -5,8 +5,12 @@ const Review = require("../models/review");
 const router = new express.Router();
 
 router.post("/reviews", async (req, res) => {
+  const review = new Review({
+    ...req.body,
+    owner:req.user._id
+  });
   try {
-    const review = new Review(req.body);
+    //const review = new Review(req.body);
 
     await review.save();
 
@@ -27,10 +31,11 @@ router.get("/reviews", async (req, res) => {
 });
 
 router.get("/reviews/:id", async (req, res) => {
+  const movie= req.params.id
   try {
-    let review = await Review.findById(req.params.id);
+    let reviews = await Review.find({movie: movie});
 
-    res.send(review);
+    res.send(reviews);
   } catch (error) {
     res.status(500).send(error);
   }
