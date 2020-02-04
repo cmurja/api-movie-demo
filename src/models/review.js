@@ -1,13 +1,17 @@
 const mongoose = require("mongoose");
 
-const Review = mongoose.model("review", {
+const Review = mongoose.model("Review", {
+
   movie: {
+
     type: String,
 
     required: true
+
   },
 
   reviewScore: {
+
     type: Number,
 
     required: true,
@@ -15,20 +19,29 @@ const Review = mongoose.model("review", {
     min: 1,
 
     max: 5
+
   },
 
   reviewText: {
+
     type: String,
 
     required: true
+
   },
 
-  owner:{
+  owner: {
+
     type: mongoose.Schema.Types.ObjectId,
+
     required: true,
-    ref:"User"
+
+    ref: "User"
 
   }
+
 });
+
+
 
 module.exports = Review;
