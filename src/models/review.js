@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const Review = mongoose.model("Review", {
+const reviewSchema =  new mongoose.Schema( {
 
   movie: {
 
@@ -45,4 +45,5 @@ const Review = mongoose.model("Review", {
 }
 );
 
+const Review = mongoose.model("Review", reviewSchema);
 module.exports = Review;
