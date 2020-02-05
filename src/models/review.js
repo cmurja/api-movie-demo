@@ -39,9 +39,10 @@ const Review = mongoose.model("Review", {
     ref: "User"
 
   }
-
-});
-
-
+},
+{
+  timestamps: true
+}
+);
 
 module.exports = Review;
